@@ -1,3 +1,13 @@
+# PHPCR Benchmarking
+
+The purpose of this repository is to compare different PHPCR implementations.
+
+## TODO
+
+* Use Travis CI to run the benchmarks (requires refactoring the index.php to pull the configuration from else where
+* Make the stored nodes a bit more complex
+* Investigate slow downs (especially insert performance, why SQLite is not using an index for subpath queries, slow downs in get by path)
+
 ## Results
 
 ### Jackalope Doctrine DBAL MySQL

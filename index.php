@@ -98,6 +98,8 @@ $query = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
 $sql2 = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND ISDESCENDANTNODE('$rootPath/1')";
 $query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
 
+gc_enable();
+
 $total = 0;
 for ($i = 1; $i <= $sections; $i++) {
     $root = \PHPCR\Util\NodeHelper::createPath($session, "$rootPath/$i");
@@ -109,6 +111,8 @@ for ($i = 1; $i <= $sections; $i++) {
     $total+= $count;
     print_r("Inserting $count nodes (total $total) took '" . $event->getDuration(). "' ms.\n");
 
+    unset($session);
+    gc_collect_cycles();
     $repository = $factory->getRepository($parameters);
     $session = $repository->login($credentials, $workspaceName);
 
