@@ -28,6 +28,7 @@ Finally it is possible to run some standard jackalope commands via ``./vendor/bi
 ### Jackalope Doctrine DBAL MySQL
 
 ```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100
 Inserting 100 nodes (total 100) took '279' ms.
 Getting a node by path took '1' ms.
 Searching a node by property took '14' ms.
@@ -73,9 +74,18 @@ Searching a node by property took '4955' ms.
 Searching a node by property in a subpath took '551' ms.
 ```
 
+```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100 --append
+Inserting 100 nodes (total 10100) took '303' ms.
+Getting a node by path took '1' ms.
+Searching a node by property took '113' ms.
+Searching a node by property in a subpath took '6' ms.
+```
+
 ### Jackalope Doctrine DBAL SQLite
 
 ```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100
 Inserting 100 nodes (total 100) took '131' ms.
 Getting a node by path took '1' ms.
 Searching a node by property took '22' ms.
@@ -121,9 +131,18 @@ Searching a node by property took '40642' ms.
 Searching a node by property in a subpath took '39664' ms.
 ```
 
+```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100 --append
+Inserting 100 nodes (total 10100) took '140' ms.
+Getting a node by path took '0' ms.
+Searching a node by property took '763' ms.
+Searching a node by property in a subpath took '735' ms.
+```
+
 ### Jackalope Jackrabbit 2.x
 
 ```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100
 Inserting 100 nodes (total 100) took '103' ms.
 Getting a node by path took '2' ms.
 Searching a node by property took '7' ms.
@@ -167,4 +186,12 @@ Inserting 100 nodes (total 10000) took '7642' ms.
 Getting a node by path took '199' ms.
 Searching a node by property took '1506' ms.
 Searching a node by property in a subpath took '492' ms.
+```
+
+```
+lsmith@localhost phpcr_benchmark (master)$ php index.php benchmark --count 100 --sections 100 --append
+Inserting 100 nodes (total 10100) took '68' ms.
+Getting a node by path took '2' ms.
+Searching a node by property took '21' ms.
+Searching a node by property in a subpath took '16' ms.
 ```
