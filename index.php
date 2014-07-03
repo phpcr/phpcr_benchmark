@@ -12,8 +12,6 @@ if (!$append && $session->nodeExists($rootPath)) {
 $session->save();
 $session->refresh(false);
 
-$count = 100;
-$sections = 100;
 $sectionStart = 1;
 if ($append) {
     $sectionStart+= $sections;

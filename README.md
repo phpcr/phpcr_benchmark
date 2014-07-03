@@ -3,9 +3,19 @@
 The purpose of this repository is to compare different PHPCR implementations.
 
 Run ``composer install`` and then copy the ``cli-config.php.dist`` to ``cli-config.php`` and adjust as needed.
-Finally run ``php index.php``. Once the command has been run once, it can optionally be run one more time
-with ``php index.php append`` to add one more "section" on top of the existing data to see how the performance
-is without having lots of previous inserts/gets before.
+
+Finally run ``php index.php`` or ``php index.php benchmark``.
+
+It is possible to also configure the number of nodes to add per batch via ``--count`` and the number of
+repetitions via ``--sections``.
+
+For example: ``php index.php benchmark --count 4 --sections 7`` (note that no equal sign is supported)
+
+Once the command has been run once, it can optionally be run one more time with ``php index.php benchmark --append``
+to add one more "section" on top of the existing data to see how the performance is without having lots of previous
+inserts/gets before. This can of course be combined with the other parameters.
+
+Finally it is possible to run some standard jackalope commands via ``./vendor/bin/jackalope``.
 
 ## TODO
 

@@ -50,8 +50,19 @@ if (!in_array($workspace, $workspaceInstance->getAccessibleWorkspaceNames())) {
     $workspaceInstance->createWorkspace($workspace);
 }
 
-if (empty($argv[1]) || 'append' === $argv[1]) {
-    $append = isset($argv[1]);
+if (empty($argv[1]) || 'benchmark' === $argv[1]) {
+    $append = in_array('--append', $argv);
+
+    $count = 100;
+    $key = array_search('--count', $argv);
+    if ($key && isset($argv[$key+1]) && is_numeric($argv[$key+1])) {
+        $count = $argv[$key+1];
+    }
+    $sections = 10;
+    $key = array_search('--sections', $argv);
+    if ($key && isset($argv[$key+1]) && is_numeric($argv[$key+1])) {
+        $sections = $argv[$key+1];
+    }
 
     if (!$append) {
         // recreate database schema
