@@ -35,7 +35,7 @@ $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
 //$factory = new \Jackalope\RepositoryFactoryJackrabbit();
 
 $parameters = array(
-//    'jackalope.uri' => $uri,
+//    'jackalope.jackrabbit_uri' => $uri,
     'jackalope.doctrine_dbal_connection' => $dbConn,
     \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
     'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
@@ -79,7 +79,7 @@ if ($key && isset($argv[$key+1]) && is_numeric($argv[$key+1])) {
     $sections = $argv[$key+1];
 }
 
-if (!$append) {
+if (!$append && $factory instanceof \Jackalope\RepositoryFactoryDoctrineDBAL) {
     // recreate database schema
     $options = array('disable_fks' => $dbConn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform);
     $repositorySchema = new \Jackalope\Transport\DoctrineDBAL\RepositorySchema($options, $dbConn);
@@ -87,5 +87,6 @@ if (!$append) {
     $workspaceInstance->createWorkspace($workspace);
 }
 
+$repository = $factory->getRepository($parameters);
 return $repository->login($credentials, $workspace);
 
