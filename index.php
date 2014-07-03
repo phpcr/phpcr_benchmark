@@ -1,84 +1,10 @@
 <?php
 
 require './vendor/autoload.php';
-
-$workspaceName = 'benchmark';
-
-$username = 'admin';
-$password = 'admin';
-
-$uri = 'http://localhost:8080/server';
-
-$driver = 'pdo_sqlite';
-$path = './benchmark.sqlite';
-$host = null;
-$port = null;
-$dbusername = null;
-$dbpassword = null;
-$dbname = null;
-/*
-$driver = 'pdo_mysql';
-$path = null;
-$host = 'localhost';
-$port = '3306';
-$dbusername = 'root';
-$dbpassword = null;
-$dbname = 'phpcr_benchmark';
-*/
-$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
-    'driver'    => $driver,
-    'path'      => $path,
-    'host'      => $host,
-    'port'      => $port,
-    'user'      => $dbusername,
-    'password'  => $dbpassword,
-    'dbname'    => $dbname
-));
-
-// recreate database schema
-$options = array('disable_fks' => $dbConn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform);
-$repositorySchema = new \Jackalope\Transport\DoctrineDBAL\RepositorySchema($options, $dbConn);
-$repositorySchema->reset();
-
-$parameters = array(
-    'jackalope.doctrine_dbal_connection' => $dbConn,
-    \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
-    'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
-);
-
-$factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
-
-/*
-$parameters = array(
-    'jackalope.jackrabbit_uri' => $uri,
-    \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
-    'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
-);
-
-$factory = new \Jackalope\RepositoryFactoryJackrabbit();
-*/
-
-$repository = $factory->getRepository($parameters);
-$credentials = new \PHPCR\SimpleCredentials($username, $password);
-
-try {
-    $session = $repository->login($credentials, $workspaceName);
-} catch (\PHPCR\NoSuchWorkspaceException $e) {
-    $adminRepository = $factory->getRepository($parameters); // get a new repository to log into
-    $session = $adminRepository->login($credentials, 'default');
-    $workspace = $session->getWorkspace();
-    if (in_array($workspaceName, $workspace->getAccessibleWorkspaceNames())) {
-        throw new \Exception("Failed to log into $workspaceName");
-    }
-
-    $workspace->createWorkspace($workspaceName);
-
-    $repository = $factory->getRepository($parameters);
-    $session = $repository->login($credentials, $workspaceName);
-}
+$session = require './cli-config.php';
 
 $rootPath = '/benchmark';
-if ($session->nodeExists($rootPath)) {
+if (!$append && $session->nodeExists($rootPath)) {
     $root = $session->getNode($rootPath);
     $root->remove();
 }
@@ -88,6 +14,11 @@ $session->refresh(false);
 
 $count = 100;
 $sections = 100;
+$sectionStart = 1;
+if ($append) {
+    $sectionStart+= $sections;
+    $sections++;
+}
 $nodeName = $count/2;
 $path = $rootPath.'/1/'.$nodeName;
 $stopWatch = new \Symfony\Component\Stopwatch\Stopwatch();
@@ -100,8 +31,8 @@ $query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
 
 gc_enable();
 
-$total = 0;
-for ($i = 1; $i <= $sections; $i++) {
+$total = ($sectionStart - 1) * $count;
+for ($i = $sectionStart; $i <= $sections; $i++) {
     $root = \PHPCR\Util\NodeHelper::createPath($session, "$rootPath/$i");
 
     $stopWatch->start("insert nodes");
@@ -112,9 +43,10 @@ for ($i = 1; $i <= $sections; $i++) {
     print_r("Inserting $count nodes (total $total) took '" . $event->getDuration(). "' ms.\n");
 
     unset($session);
+
     gc_collect_cycles();
     $repository = $factory->getRepository($parameters);
-    $session = $repository->login($credentials, $workspaceName);
+    $session = $repository->login($credentials, $workspace);
 
     $stopWatch->start("get a node");
     $node = $session->getNode($path);

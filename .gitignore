@@ -1,2 +1,4 @@
 /vendor/
 benchmark.sqlite
+
+/cli-config.php

@@ -2,6 +2,11 @@
 
 The purpose of this repository is to compare different PHPCR implementations.
 
+Run ``composer install`` and then copy the ``cli-config.php.dist`` to ``cli-config.php`` and adjust as needed.
+Finally run ``php index.php``. Once the command has been run once, it can optionally be run one more time
+with ``php index.php append`` to add one more "section" on top of the existing data to see how the performance
+is without having lots of previous inserts/gets before.
+
 ## TODO
 
 * Use Travis CI to run the benchmarks (requires refactoring the index.php to pull the configuration from else where
