@@ -2,8 +2,9 @@
 
 require './vendor/autoload.php';
 
-$session = require './cli-config.php';
+require './cli-config.php';
 
+$session = getSession($factory, $credentials, $parameters, $workspace);
 if (!$session instanceof \PHPCR\SessionInterface) {
     exit("Failed to connect properly. If you add parameters, the first one needs to be 'benchmark', ie. 'php index.php benchmark --append' \n");
 }
@@ -36,6 +37,8 @@ gc_enable();
 
 $total = ($sectionStart - 1) * $count;
 for ($i = $sectionStart; $i <= $sections; $i++) {
+    print_r("Current memory use is '".memory_get_usage()."' bytes \n");
+
     $root = \PHPCR\Util\NodeHelper::createPath($session, "$rootPath/$i");
 
     $stopWatch->start("insert nodes");
@@ -48,8 +51,7 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     unset($session);
 
     gc_collect_cycles();
-    $repository = $factory->getRepository($parameters);
-    $session = $repository->login($credentials, $workspace);
+    $session = getSession($factory, $credentials, $parameters, $workspace);
 
     $stopWatch->start("get a node");
     $node = $session->getNode($path);
@@ -76,6 +78,8 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     validateNode($node, $path);
 }
 
+print_r("Current memory use is '".memory_get_usage()."' bytes \n");
+
 function validateNode(\PHPCR\NodeInterface $node = null, $path)
 {
     if (!$node) {
@@ -96,4 +100,10 @@ function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $roo
     }
 
     $session->save();
+}
+
+function getSession(\PHPCR\RepositoryFactoryInterface $factory, \PHPCR\SimpleCredentials $credentials, array $parameters, $workspace) {
+    $repository = $factory->getRepository($parameters);
+    return $repository->login($credentials, $workspace);
+
 }
