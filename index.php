@@ -1,7 +1,12 @@
 <?php
 
 require './vendor/autoload.php';
+
 $session = require './cli-config.php';
+
+if (!$session instanceof \PHPCR\SessionInterface) {
+    exit("Failed to connect properly. If you add parameters, the first one needs to be 'benchmark', ie. 'php index.php benchmark --append' \n");
+}
 
 $rootPath = '/benchmark';
 if (!$append && $session->nodeExists($rootPath)) {
