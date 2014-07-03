@@ -6,42 +6,38 @@
  * For further details, please see Doctrine configuration page.
  * http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connection-details
  */
-$user     = 'root';
-$pass     = '';
+$db_user     = 'root';
+$db_pass     = '';
 $driver   = 'pdo_sqlite';
 $host     = 'localhost';
 $database = 'phpcr_benchmark';
 $path     = 'benchmark.sqlite';
 $uri      = 'http://localhost:8080/server';
+$workspace  = 'benchmark'; // phpcr workspace to use
+$phpcr_user       = 'admin';
+$phpcr_pass       = 'admin';
+
+$factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
+//$factory = new \Jackalope\RepositoryFactoryJackrabbit();
 
 // Bootstrap Doctrine
 $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
     'driver'    => $driver,
     'host'      => $host,
-    'user'      => $user,
-    'password'  => $pass,
+    'user'      => $db_user,
+    'password'  => $db_pass,
     'dbname'    => $database,
     'path'      => $path,
 ));
 
-/*
- * configuration
- */
-$workspace  = 'benchmark'; // phpcr workspace to use
-$user       = 'admin';
-$pass       = 'admin';
-
-$factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
-//$factory = new \Jackalope\RepositoryFactoryJackrabbit();
-
 $parameters = array(
-//    'jackalope.jackrabbit_uri' => $uri,
+    'jackalope.jackrabbit_uri' => $uri,
     'jackalope.doctrine_dbal_connection' => $dbConn,
     \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
     'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
 );
 
-$credentials = new \PHPCR\SimpleCredentials($user, $pass);
+$credentials = new \PHPCR\SimpleCredentials($phpcr_user, $phpcr_pass);
 $repository = $factory->getRepository($parameters);
 
 $adminSession = $repository->login($credentials, 'default');
