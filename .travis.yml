@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - 5.5
+
+env:
+  - TRANSPORT=jackrabbit
+  - TRANSPORT=doctrine_dbal DB=sqlite
+  - TRANSPORT=doctrine_dbal DB=mysql
+  - TRANSPORT=doctrine_dbal DB=pgsql
+
+before_script:
+  - echo "memory_limit = 2048M" >> travis.php.ini
+  - phpenv config-add travis.php.ini
+  - composer self-update
+  - cp cli-config.php.dist cli-config.php
+  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_tests;"; fi
+  - if [[ "$DB" == "mysql" ]]; then sed -i 's/pdo_sqlite/pdo_mysql/g' cli-config.php; fi
+  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_tests;" -U postgres; fi
+  - if [[ "$DB" == "pgsql" ]]; then sed -i 's/pdo_sqlite/pdo_pgsql/g' cli-config.php; fi
+  - if [[ "$DB" == "pgsql" ]]; then sed -i 's/root/postgres/g' cli-config.php; fi
+  - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/RepositoryFactoryDoctrineDBAL/RepositoryFactoryJackrabbit/g' cli-config.php; fi
+  - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/jackalope/jackalope-jackrabbit/bin/jackrabbit.sh; fi
+
+script:
+  - php index.php benchmark --count 1000 --sections 100
+  - php index.php benchmark --count 1000 --sections 100 --append
