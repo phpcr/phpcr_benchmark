@@ -11,43 +11,49 @@ $workspace  = 'benchmark';
 $phpcr_user = 'admin';
 $phpcr_pass = 'admin';
 
-$transport = 'doctrine-dbal';
+// either 'doctrine-dbal' or 'jackrabbit'
+$transport = 'some-transport';
 
-if ('doctrine-dbal' === $transport) {
-    $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
+switch ($transport) {
+    case 'doctrine-dbal':
+        $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
 
-    // Bootstrap Doctrine
-    $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
-        'driver'    => $driver,
-        'host'      => $host,
-        'user'      => $db_user,
-        'password'  => $db_pass,
-        'dbname'    => $database,
-        'path'      => $path,
-    ));
-
-    if (isset($argv[1]) && $argv[1] == 'jackalope:init:dbal') {
-        // special case: the init command needs the db connection, but a session is impossible if the db is not yet initialized
-        $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-            'connection' => new \Jackalope\Tools\Console\Helper\DoctrineDbalHelper($dbConn)
+        // Bootstrap Doctrine
+        $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
+            'driver'    => $driver,
+            'host'      => $host,
+            'user'      => $db_user,
+            'password'  => $db_pass,
+            'dbname'    => $database,
+            'path'      => $path,
         ));
 
-        return;
-    }
+        if (isset($argv[1]) && $argv[1] == 'jackalope:init:dbal') {
+            // special case: the init command needs the db connection, but a session is impossible if the db is not yet initialized
+            $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+                'connection' => new \Jackalope\Tools\Console\Helper\DoctrineDbalHelper($dbConn)
+            ));
 
-    $parameters = array(
-        'jackalope.doctrine_dbal_connection' => $dbConn,
-        \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
-        'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
-    );
-} else {
-    $factory = new \Jackalope\RepositoryFactoryJackrabbit();
+            return;
+        }
 
-    $parameters = array(
-        'jackalope.jackrabbit_uri' => $uri,
-        \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
-        'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
-    );
+        $parameters = array(
+            'jackalope.doctrine_dbal_connection' => $dbConn,
+            \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
+            'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
+        );
+        break;
+    case 'jackrabbit':
+        $factory = new \Jackalope\RepositoryFactoryJackrabbit();
+
+        $parameters = array(
+            'jackalope.jackrabbit_uri' => $uri,
+            \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
+            'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
+        );
+        break;
+    default:
+        die('Pick a transport layer');
 }
 
 $credentials = new \PHPCR\SimpleCredentials($phpcr_user, $phpcr_pass);

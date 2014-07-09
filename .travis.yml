@@ -15,13 +15,13 @@ before_script:
   - composer self-update
   - composer require jackalope/jackalope-$TRANSPORT:~1.0  --prefer-source
   - cp cli-config.php.dist cli-config.php
+  - sed -i 's/some-transport/$TRANSPORT/g' cli-config.php; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_benchmark;"; fi
   - if [[ "$DB" == "mysql" ]]; then sed -i 's/pdo_sqlite/pdo_mysql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_benchmark;" -U postgres; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/pdo_sqlite/pdo_pgsql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/root/postgres/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "doctrine-dbal" ]]; then ./vendor/bin/jackalope jackalope:init:dbal; fi
-  - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/= 'doctrine-dbal'/= 'jackrabbit'/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/bin/jackrabbit.sh; fi
 
 script:
