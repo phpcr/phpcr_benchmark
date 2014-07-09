@@ -26,5 +26,5 @@ before_script:
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/bin/jackrabbit.sh; fi
 
 script:
-  - php index.php benchmark --count 1000 --sections 100
-  - php index.php benchmark --count 1000 --sections 100 --append
+  - php index.php benchmark --count 100 --sections 100
+  - php index.php benchmark --count 100 --sections 100 --append
