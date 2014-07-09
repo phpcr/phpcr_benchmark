@@ -5,24 +5,25 @@ php:
 
 env:
   - TRANSPORT=jackrabbit
-  - TRANSPORT=doctrine_dbal DB=sqlite
-  - TRANSPORT=doctrine_dbal DB=mysql
-  - TRANSPORT=doctrine_dbal DB=pgsql
+  - TRANSPORT=doctrine-dbal DB=sqlite
+  - TRANSPORT=doctrine-dbal DB=mysql
+  - TRANSPORT=doctrine-dbal DB=pgsql
 
 before_script:
   - echo "memory_limit = 2048M" >> travis.php.ini
   - phpenv config-add travis.php.ini
   - composer self-update
-  - composer install --prefer-source
+  - composer require jackalope/jackalope-$TRANSPORT:~1.0  --prefer-source
   - cp cli-config.php.dist cli-config.php
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_tests;"; fi
   - if [[ "$DB" == "mysql" ]]; then sed -i 's/pdo_sqlite/pdo_mysql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_tests;" -U postgres; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/pdo_sqlite/pdo_pgsql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/root/postgres/g' cli-config.php; fi
-  - if [[ "$TRANSPORT" == "doctrine_dbal" ]]; then ./vendor/jackalope/jackalope-doctrine-dbal/bin/jackalope jackalope:init:dbal; fi
+  - if [[ "$TRANSPORT" == "doctrine-dbal" ]]; then ./vendor/jackalope/jackalope-doctrine-dbal/bin/jackalope jackalope:init:dbal; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/RepositoryFactoryDoctrineDBAL/RepositoryFactoryJackrabbit/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/jackalope/jackalope-jackrabbit/bin/jackrabbit.sh; fi
+  - ./vendor/bin/jackalope phpcr:workspace:create benchmark
 
 script:
   - php index.php benchmark --count 1000 --sections 100

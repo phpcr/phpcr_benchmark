@@ -2,8 +2,7 @@
     "name": "lsmith/phpcr_benchmark",
     "description": "PHPCR Benchmark",
     "require": {
-        "jackalope/jackalope-jackrabbit": "~1.0",
-        "jackalope/jackalope-doctrine-dbal": "~1.0",
+        "phpcr/phpcr-implementation": "~2.1",
         "symfony/stopwatch": "~2.4",
         "psr/log": "~1.0"
     },
