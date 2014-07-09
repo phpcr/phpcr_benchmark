@@ -23,7 +23,6 @@ before_script:
   - if [[ "$TRANSPORT" == "doctrine-dbal" ]]; then ./vendor/bin/jackalope jackalope:init:dbal; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/doctrine-dbal/jackrabbit/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/bin/jackrabbit.sh; fi
-  - ./vendor/bin/jackalope phpcr:workspace:create benchmark
 
 script:
   - php index.php benchmark --count 10 --sections 10
