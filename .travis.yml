@@ -15,16 +15,16 @@ before_script:
   - composer self-update
   - composer require jackalope/jackalope-$TRANSPORT:~1.0  --prefer-source
   - cp cli-config.php.dist cli-config.php
-  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_tests;"; fi
+  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_benchmark;"; fi
   - if [[ "$DB" == "mysql" ]]; then sed -i 's/pdo_sqlite/pdo_mysql/g' cli-config.php; fi
-  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_tests;" -U postgres; fi
+  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_benchmark;" -U postgres; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/pdo_sqlite/pdo_pgsql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/root/postgres/g' cli-config.php; fi
-  - if [[ "$TRANSPORT" == "doctrine-dbal" ]]; then ./vendor/jackalope/jackalope-doctrine-dbal/bin/jackalope jackalope:init:dbal; fi
+  - if [[ "$TRANSPORT" == "doctrine-dbal" ]]; then ./vendor/bin/jackalope jackalope:init:dbal; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/RepositoryFactoryDoctrineDBAL/RepositoryFactoryJackrabbit/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/jackalope/jackalope-jackrabbit/bin/jackrabbit.sh; fi
   - ./vendor/bin/jackalope phpcr:workspace:create benchmark
 
 script:
-  - php index.php benchmark --count 1000 --sections 100
-  - php index.php benchmark --count 1000 --sections 100 --append
+  - php index.php benchmark --count 10 --sections 10
+  - php index.php benchmark --count 10 --sections 10 --append
