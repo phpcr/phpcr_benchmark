@@ -13,6 +13,7 @@ before_script:
   - echo "memory_limit = 2048M" >> travis.php.ini
   - phpenv config-add travis.php.ini
   - composer self-update
+  - composer install --prefer-source
   - cp cli-config.php.dist cli-config.php
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database phpcr_tests;"; fi
   - if [[ "$DB" == "mysql" ]]; then sed -i 's/pdo_sqlite/pdo_mysql/g' cli-config.php; fi
