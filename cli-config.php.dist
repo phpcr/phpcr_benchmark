@@ -11,25 +11,44 @@ $workspace  = 'benchmark';
 $phpcr_user = 'admin';
 $phpcr_pass = 'admin';
 
-$factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
-//$factory = new \Jackalope\RepositoryFactoryJackrabbit();
+$transport = 'doctrine-dbal';
+
+if ('doctrine-dbal' === $transport) {
+    $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
 
 // Bootstrap Doctrine
-$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
-    'driver'    => $driver,
-    'host'      => $host,
-    'user'      => $db_user,
-    'password'  => $db_pass,
-    'dbname'    => $database,
-    'path'      => $path,
-));
+    $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
+        'driver'    => $driver,
+        'host'      => $host,
+        'user'      => $db_user,
+        'password'  => $db_pass,
+        'dbname'    => $database,
+        'path'      => $path,
+    ));
 
-$parameters = array(
-    'jackalope.jackrabbit_uri' => $uri,
-    'jackalope.doctrine_dbal_connection' => $dbConn,
-    \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
-    'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
-);
+    if (isset($argv[1]) && $argv[1] == 'jackalope:init:dbal') {
+        // special case: the init command needs the db connection, but a session is impossible if the db is not yet initialized
+        $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+            'connection' => new \Jackalope\Tools\Console\Helper\DoctrineDbalHelper($dbConn)
+        ));
+
+        return;
+    }
+
+    $parameters = array(
+        'jackalope.doctrine_dbal_connection' => $dbConn,
+        \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
+        'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
+    );
+} else {
+    $factory = new \Jackalope\RepositoryFactoryJackrabbit();
+
+    $parameters = array(
+        'jackalope.jackrabbit_uri' => $uri,
+        \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
+        'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
+    );
+}
 
 $credentials = new \PHPCR\SimpleCredentials($phpcr_user, $phpcr_pass);
 $repository = $factory->getRepository($parameters);

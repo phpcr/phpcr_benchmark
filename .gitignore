@@ -2,3 +2,5 @@
 benchmark.sqlite
 
 /cli-config.php
+
+/composer.lock
