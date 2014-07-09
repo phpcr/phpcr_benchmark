@@ -16,7 +16,7 @@ $transport = 'doctrine-dbal';
 if ('doctrine-dbal' === $transport) {
     $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
 
-// Bootstrap Doctrine
+    // Bootstrap Doctrine
     $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
         'driver'    => $driver,
         'host'      => $host,
