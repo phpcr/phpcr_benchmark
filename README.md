@@ -4,6 +4,16 @@ The purpose of this repository is to compare different PHPCR implementations.
 
 Run ``composer install`` and then copy the ``cli-config.php.dist`` to ``cli-config.php`` and adjust as needed.
 
+Create the database is necessary and make sure to initialize the DB structure when using Doctrine DBAL:
+```
+./vendor/jackalope/jackalope-doctrine-dbal/bin/jackalope jackalope:init:dbal
+```
+
+Alternatively when using Jackrabbit download and start the server:
+```
+./vendor/jackalope/jackalope-jackrabbit/bin/jackrabbit.sh
+```
+
 Finally run ``php index.php`` or ``php index.php benchmark``.
 
 It is possible to also configure the number of nodes to add per batch via ``--count`` and the number of

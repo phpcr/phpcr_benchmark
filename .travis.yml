@@ -20,6 +20,7 @@ before_script:
   - if [[ "$DB" == "pgsql" ]]; then psql -c "create database phpcr_tests;" -U postgres; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/pdo_sqlite/pdo_pgsql/g' cli-config.php; fi
   - if [[ "$DB" == "pgsql" ]]; then sed -i 's/root/postgres/g' cli-config.php; fi
+  - if [[ "$TRANSPORT" == "doctrine_dbal" ]]; then ./vendor/jackalope/jackalope-doctrine-dbal/bin/jackalope jackalope:init:dbal; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then sed -i 's/RepositoryFactoryDoctrineDBAL/RepositoryFactoryJackrabbit/g' cli-config.php; fi
   - if [[ "$TRANSPORT" == "jackrabbit" ]]; then ./vendor/jackalope/jackalope-jackrabbit/bin/jackrabbit.sh; fi
 
