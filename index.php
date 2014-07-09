@@ -64,7 +64,6 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     $event = $stopWatch->stop("search a node");
     print_r("Searching a node by property took '" . $event->getDuration(). "' ms.\n");
 
-    /** @var NodeIterator $nodes */
     $node = $result->getNodes()->current();
     validateNode($node, $path);
 
@@ -73,7 +72,6 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     $event = $stopWatch->stop("search a node in a subpath");
     print_r("Searching a node by property in a subpath took '" . $event->getDuration(). "' ms.\n");
 
-    /** @var NodeIterator $nodes */
     $node = $result->getNodes()->current();
     validateNode($node, $path);
 }
