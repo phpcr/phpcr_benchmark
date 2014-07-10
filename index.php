@@ -47,6 +47,10 @@ $sql = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName'";
 $query = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
 $sql2 = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND ISDESCENDANTNODE('$rootPath/1')";
 $query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
+$sql = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."')";
+$query3 = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
+$sql2 = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."') AND ISDESCENDANTNODE('$rootPath/1')";
+$query4 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
 
 gc_enable();
 
@@ -89,6 +93,22 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
 
     $node = $result->getNodes()->current();
     validateNode($node, $path);
+
+    $stopWatch->start("search a node via contains");
+    $result = $query3->execute();
+    $event = $stopWatch->stop("search a node via contains");
+    print_r("Searching a node via contains took '" . $event->getDuration(). "' ms.\n");
+
+    $node = $result->getNodes()->current();
+    validateNode($node, $path);
+
+    $stopWatch->start("search a node via contains in a subpath");
+    $result = $query4->execute();
+    $event = $stopWatch->stop("search a node via contains in a subpath");
+    print_r("Searching a node via contains in a subpath took '" . $event->getDuration(). "' ms.\n");
+
+    $node = $result->getNodes()->current();
+    validateNode($node, $path);
 }
 
 print_r("Current memory use is '".memory_get_usage()."' bytes \n");
@@ -110,6 +130,7 @@ function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $roo
         $node = $root->addNode($i);
         $node->setProperty('foo', 'bar', \PHPCR\PropertyType::STRING);
         $node->setProperty('count', $i, \PHPCR\PropertyType::STRING);
+        $node->setProperty('md5', md5($i), \PHPCR\PropertyType::STRING);
     }
 
     $session->save();
