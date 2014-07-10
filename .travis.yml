@@ -28,3 +28,4 @@ before_script:
 script:
   - php index.php benchmark --count 100 --sections 100
   - php index.php benchmark --count 100 --sections 100 --append
+  - php index.php benchmark --count 100 --sections 101 --append --optimize

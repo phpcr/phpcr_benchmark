@@ -26,6 +26,8 @@ Once the command has been run once, it can optionally be run one more time with 
 to add one more "section" on top of the existing data to see how the performance is without having lots of previous
 inserts/gets before. This can of course be combined with the other parameters.
 
+Furthermore you can force a table optimization before the test run via ``--optimize``.
+
 Finally it is possible to run some standard jackalope commands via ``./vendor/bin/jackalope``.
 
 ## TODO

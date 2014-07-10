@@ -42,6 +42,9 @@ switch ($transport) {
             \Jackalope\Session::OPTION_AUTO_LASTMODIFIED => false,
             'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
         );
+
+        $optimize = in_array('--optimize', $argv);
+
         break;
     case 'jackrabbit':
         $factory = new \Jackalope\RepositoryFactoryJackrabbit();

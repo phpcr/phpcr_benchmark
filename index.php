@@ -4,6 +4,21 @@ require './vendor/autoload.php';
 
 require './cli-config.php';
 
+if (!empty($optimize)) {
+    switch ($driver) {
+        case 'pdo_sqlite':
+            break;
+        case 'pdo_mysql':
+            $result = $dbConn->executeQuery('OPTIMIZE TABLE phpcr_nodes');
+            $result->fetchAll();
+            break;
+        case 'pdo_pgsql':
+            $result = $dbConn->executeQuery('ANALYZE phpcr_nodes');
+            $result->fetchAll();
+            break;
+    }
+}
+
 $session = getSession($factory, $credentials, $parameters, $workspace);
 if (!$session instanceof \PHPCR\SessionInterface) {
     exit("Failed to connect properly. If you add parameters, the first one needs to be 'benchmark', ie. 'php index.php benchmark --append' \n");
