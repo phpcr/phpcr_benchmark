@@ -14,7 +14,12 @@ composer require jackalope/jackalope-jackrabbit:~1.0
 ./vendor/bin/jackrabbit.sh
 ```
 
-Copy the ``cli-config.php.dist`` to ``cli-config.php`` and adjust as needed.
+Also you can use MongoDB (not available at the moment):
+```
+composer require jackalope/jackalope-mongodb:*
+```
+
+Copy the ``cli-config.php.dist`` or ``cli-config.php.mongo-dist`` for **MongoDB** to ``cli-config.php`` and adjust as needed.
 Finally run ``php index.php`` or ``php index.php benchmark``.
 
 It is possible to also configure the number of nodes to add per batch via ``--count`` and the number of
@@ -209,3 +214,7 @@ Getting a node by path took '2' ms.
 Searching a node by property took '21' ms.
 Searching a node by property in a subpath took '16' ms.
 ```
+
+### Jackalope MongoDB
+
+Work in progress
