@@ -4,6 +4,7 @@ $db_user    = 'root';
 $db_pass    = '';
 $driver     = 'pdo_sqlite';
 $host       = 'localhost';
+$port       = null;
 $database   = 'phpcr_benchmark';
 $path       = 'benchmark.sqlite';
 $uri        = 'http://localhost:8080/server';
@@ -11,7 +12,7 @@ $workspace  = 'benchmark';
 $phpcr_user = 'admin';
 $phpcr_pass = 'admin';
 
-// either 'doctrine-dbal' or 'jackrabbit'
+// either 'doctrine-dbal', 'jackrabbit' or 'mongodb'
 $transport = 'some-transport';
 
 switch ($transport) {
@@ -55,6 +56,33 @@ switch ($transport) {
             'jackalope.logger' => new \Jackalope\Transport\Logging\Psr3Logger(new \Psr\Log\NullLogger()),
         );
         break;
+
+    case 'mongodb':
+        $mongoOptions = array('db' => $database);
+        if ($db_user) {
+            $mongoOptions['username'] = $db_user;
+        }
+        if ($db_pass) {
+            $mongoOptions['password'] = $db_pass;
+        }
+
+        $port = $port ?: 27017;
+        $mongoClient = new \MongoClient(sprintf('mongodb://%s:%s', $host, $port), $mongoOptions);
+
+        $doctrineMongoDB = new \Doctrine\MongoDB\Database(
+            new \Doctrine\MongoDB\Connection($mongoClient),
+            new \MongoDB($mongoClient, $database),
+            new \Doctrine\Common\EventManager()
+        );
+
+        $parameters = array(
+            'jackalope.mongodb_database' => $doctrineMongoDB
+        );
+
+        $factory = new \Jackalope\RepositoryFactoryMongoDB();
+
+        break;
+
     default:
         die('Pick a transport layer');
 }
@@ -85,6 +113,7 @@ if (isset($argv[1])
 }
 
 $append = in_array('--append', $argv);
+$disableQuery = in_array('--disable-query', $argv);
 
 $count = 100;
 $key = array_search('--count', $argv);
@@ -97,10 +126,17 @@ if ($key && isset($argv[$key+1]) && is_numeric($argv[$key+1])) {
     $sections = $argv[$key+1];
 }
 
-if (!$append && $factory instanceof \Jackalope\RepositoryFactoryDoctrineDBAL) {
-    // recreate database schema
-    $options = array('disable_fks' => $dbConn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform);
-    $repositorySchema = new \Jackalope\Transport\DoctrineDBAL\RepositorySchema($options, $dbConn);
-    $repositorySchema->reset();
-    $workspaceInstance->createWorkspace($workspace);
+if (!$append) {
+    if ($factory instanceof \Jackalope\RepositoryFactoryDoctrineDBAL) {
+        // recreate database schema
+        $options = array('disable_fks' => $dbConn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform);
+        $repositorySchema = new \Jackalope\Transport\DoctrineDBAL\RepositorySchema($options, $dbConn);
+        $repositorySchema->reset();
+        $workspaceInstance->createWorkspace($workspace);
+    } elseif ($factory instanceof \Jackalope\RepositoryFactoryMongoDB) {
+          // recreate database collections
+          $doctrineMongoDB->drop();
+          $workspaceInstance->createWorkspace('default');
+          $workspaceInstance->createWorkspace($workspace);
+    }
 }

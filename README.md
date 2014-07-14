@@ -16,10 +16,10 @@ composer require jackalope/jackalope-jackrabbit:~1.0
 
 Also you can use MongoDB (not available at the moment):
 ```
-composer require jackalope/jackalope-mongodb:*
+composer require jackalope/jackalope-mongodb:dev-master
 ```
 
-Copy the ``cli-config.php.dist`` or ``cli-config.php.mongo-dist`` for **MongoDB** to ``cli-config.php`` and adjust as needed.
+Copy the ``cli-config.php.dist`` to ``cli-config.php`` and adjust as needed.
 Finally run ``php index.php`` or ``php index.php benchmark``.
 
 It is possible to also configure the number of nodes to add per batch via ``--count`` and the number of
@@ -31,9 +31,10 @@ Once the command has been run once, it can optionally be run one more time with 
 to add one more "section" on top of the existing data to see how the performance is without having lots of previous
 inserts/gets before. This can of course be combined with the other parameters.
 
-Furthermore you can force a table optimization before the test run via ``--optimize``.
+Furthermore you can force a table optimization (for Doctrine DBAL) before the test run via ``--optimize`` and
+disable query execution via ``--disable-query``.
 
-Finally it is possible to run some standard jackalope commands via ``./vendor/bin/jackalope``.
+Finally it is possible to run some standard Jackalope commands via ``./vendor/bin/jackalope``.
 
 ## TODO
 
