@@ -42,15 +42,17 @@ $nodeName = $count/2;
 $path = $rootPath.'/1/'.$nodeName;
 $stopWatch = new \Symfony\Component\Stopwatch\Stopwatch();
 
-$qm = $session->getWorkspace()->getQueryManager();
-$sql = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName'";
-$query = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
-$sql2 = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND ISDESCENDANTNODE('$rootPath/1')";
-$query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
-$sql = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."')";
-$query3 = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
-$sql2 = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."') AND ISDESCENDANTNODE('$rootPath/1')";
-$query4 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
+if (empty($disableQuery)) {
+    $qm = $session->getWorkspace()->getQueryManager();
+    $sql = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName'";
+    $query = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
+    $sql2 = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND ISDESCENDANTNODE('$rootPath/1')";
+    $query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
+    $sql = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."')";
+    $query3 = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
+    $sql2 = "SELECT * FROM [nt:unstructured] WHERE CONTAINS([nt:unstructured].md5, '".md5($nodeName)."') AND ISDESCENDANTNODE('$rootPath/1')";
+    $query4 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
+}
 
 gc_enable();
 
@@ -78,37 +80,39 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     print_r("Getting a node by path took '" . $event->getDuration(). "' ms.\n");
     validateNode($node, $path);
 
-    $stopWatch->start("search a node");
-    $result = $query->execute();
-    $event = $stopWatch->stop("search a node");
-    print_r("Searching a node by property took '" . $event->getDuration(). "' ms.\n");
+    if (empty($disableQuery)) {
+        $stopWatch->start("search a node");
+        $result = $query->execute();
+        $event = $stopWatch->stop("search a node");
+        print_r("Searching a node by property took '" . $event->getDuration(). "' ms.\n");
 
-    $node = $result->getNodes()->current();
-    validateNode($node, $path);
+        $node = $result->getNodes()->current();
+        validateNode($node, $path);
 
-    $stopWatch->start("search a node in a subpath");
-    $result = $query2->execute();
-    $event = $stopWatch->stop("search a node in a subpath");
-    print_r("Searching a node by property in a subpath took '" . $event->getDuration(). "' ms.\n");
+        $stopWatch->start("search a node in a subpath");
+        $result = $query2->execute();
+        $event = $stopWatch->stop("search a node in a subpath");
+        print_r("Searching a node by property in a subpath took '" . $event->getDuration(). "' ms.\n");
 
-    $node = $result->getNodes()->current();
-    validateNode($node, $path);
+        $node = $result->getNodes()->current();
+        validateNode($node, $path);
 
-    $stopWatch->start("search a node via contains");
-    $result = $query3->execute();
-    $event = $stopWatch->stop("search a node via contains");
-    print_r("Searching a node via contains took '" . $event->getDuration(). "' ms.\n");
+        $stopWatch->start("search a node via contains");
+        $result = $query3->execute();
+        $event = $stopWatch->stop("search a node via contains");
+        print_r("Searching a node via contains took '" . $event->getDuration(). "' ms.\n");
 
-    $node = $result->getNodes()->current();
-    validateNode($node, $path);
+        $node = $result->getNodes()->current();
+        validateNode($node, $path);
 
-    $stopWatch->start("search a node via contains in a subpath");
-    $result = $query4->execute();
-    $event = $stopWatch->stop("search a node via contains in a subpath");
-    print_r("Searching a node via contains in a subpath took '" . $event->getDuration(). "' ms.\n");
+        $stopWatch->start("search a node via contains in a subpath");
+        $result = $query4->execute();
+        $event = $stopWatch->stop("search a node via contains in a subpath");
+        print_r("Searching a node via contains in a subpath took '" . $event->getDuration(). "' ms.\n");
 
-    $node = $result->getNodes()->current();
-    validateNode($node, $path);
+        $node = $result->getNodes()->current();
+        validateNode($node, $path);
+    }
 }
 
 print_r("Current memory use is '".memory_get_usage()."' bytes \n");
