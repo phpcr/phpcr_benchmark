@@ -44,7 +44,7 @@ $stopWatch = new \Symfony\Component\Stopwatch\Stopwatch();
 
 if (empty($disableQuery)) {
     $qm = $session->getWorkspace()->getQueryManager();
-    $sql = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName'";
+    $sql = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND section = '1'";
     $query = $qm->createQuery($sql, \PHPCR\Query\QueryInterface::JCR_SQL2);
     $sql2 = "SELECT * FROM [nt:unstructured] WHERE count = '$nodeName' AND ISDESCENDANTNODE('$rootPath/1')";
     $query2 = $qm->createQuery($sql2, \PHPCR\Query\QueryInterface::JCR_SQL2);
@@ -63,7 +63,7 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     $root = \PHPCR\Util\NodeHelper::createPath($session, "$rootPath/$i");
 
     $stopWatch->start("insert nodes");
-    insertNodes($session, $root, $count);
+    insertNodes($session, $root, $count, $i);
     $event = $stopWatch->stop("insert nodes");
 
     $total+= $count;
@@ -128,12 +128,13 @@ function validateNode(\PHPCR\NodeInterface $node = null, $path)
     }
 }
 
-function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $root, $count)
+function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $root, $count, $section)
 {
     for ($i = 1; $i <= $count; $i++) {
         $node = $root->addNode($i);
         $node->setProperty('foo', 'bar', \PHPCR\PropertyType::STRING);
         $node->setProperty('count', $i, \PHPCR\PropertyType::STRING);
+        $node->setProperty('section', $section, \PHPCR\PropertyType::STRING);
         $node->setProperty('md5', md5($i), \PHPCR\PropertyType::STRING);
     }
 

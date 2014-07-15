@@ -4,13 +4,13 @@ The purpose of this repository is to compare different PHPCR implementations.
 
 Create the database is necessary and make sure to initialize the DB structure when using Doctrine DBAL:
 ```
-composer require jackalope/jackalope-doctrine-dbal:~1.0
+composer require jackalope/jackalope-doctrine-dbal:~1.1
 ./vendor/bin/jackalope jackalope:init:dbal
 ```
 
 Alternatively when using Jackrabbit download and start the server:
 ```
-composer require jackalope/jackalope-jackrabbit:~1.0
+composer require jackalope/jackalope-jackrabbit:~1.1
 ./vendor/bin/jackrabbit.sh
 ```
 
