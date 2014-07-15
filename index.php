@@ -38,8 +38,8 @@ if ($append) {
     $sectionStart+= $sections;
     $sections++;
 }
-$nodeName = $count/2;
-$path = $rootPath.'/1/'.$nodeName;
+$nodeName = '1/'.ceil($count/2);
+$path = $rootPath.'/'.$nodeName;
 $stopWatch = new \Symfony\Component\Stopwatch\Stopwatch();
 
 if (empty($disableQuery)) {
@@ -63,7 +63,7 @@ for ($i = $sectionStart; $i <= $sections; $i++) {
     $root = \PHPCR\Util\NodeHelper::createPath($session, "$rootPath/$i");
 
     $stopWatch->start("insert nodes");
-    insertNodes($session, $root, $count);
+    insertNodes($session, $root, $count, $i);
     $event = $stopWatch->stop("insert nodes");
 
     $total+= $count;
@@ -128,13 +128,13 @@ function validateNode(\PHPCR\NodeInterface $node = null, $path)
     }
 }
 
-function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $root, $count)
+function insertNodes(\PHPCR\SessionInterface $session, \PHPCR\NodeInterface $root, $count, $section)
 {
     for ($i = 1; $i <= $count; $i++) {
         $node = $root->addNode($i);
         $node->setProperty('foo', 'bar', \PHPCR\PropertyType::STRING);
-        $node->setProperty('count', $i, \PHPCR\PropertyType::STRING);
-        $node->setProperty('md5', md5($i), \PHPCR\PropertyType::STRING);
+        $node->setProperty('count', $section.'/'.$i, \PHPCR\PropertyType::STRING);
+        $node->setProperty('md5', md5($section.'/'.$i), \PHPCR\PropertyType::STRING);
     }
 
     $session->save();
