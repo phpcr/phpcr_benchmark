@@ -6,7 +6,10 @@
         "symfony/stopwatch": "~2.4",
         "psr/log": "~1.0"
     },
-    "license": "MIT",
+    "license": [
+        "MIT",
+        "Apache-2.0"
+    ],
     "authors": [
         {
             "name": "Lukas Kahwe Smith",

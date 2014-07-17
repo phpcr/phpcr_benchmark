@@ -1,6 +1,7 @@
 /vendor/
-benchmark.sqlite
+benchmark.sqlite*
 
 /cli-config.php
 
 /composer.lock
+
