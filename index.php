@@ -38,8 +38,8 @@ if ($append) {
     $sectionStart+= $sections;
     $sections++;
 }
-$nodeName = '1/'.ceil($count/2);
-$path = $rootPath.'/'.$nodeName;
+$nodeName = ceil($count/2);
+$path = $rootPath.'/1/'.$nodeName;
 $stopWatch = new \Symfony\Component\Stopwatch\Stopwatch();
 
 if (empty($disableQuery)) {
