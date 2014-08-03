@@ -43,7 +43,7 @@ Finally it is possible to run some standard Jackalope commands via ``./vendor/bi
 
 ## Results
 
-See also the Travis-CI [![Build Status](https://travis-ci.org/lsmith77/phpcr_benchmark.svg?branch=master)](https://travis-ci.org/lsmith77/phpcr_benchmark).
+See also the Travis-CI [![Build Status](https://travis-ci.org/phpcr/phpcr_benchmark.svg?branch=master)](https://travis-ci.org/phpcr/phpcr_benchmark).
 
 ### Jackalope Doctrine DBAL MySQL
 
